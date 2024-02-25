@@ -108,9 +108,9 @@ tab1, tab2 = st.tabs(["Workspace", "Screenshots"])
 with tab2:
     col1, col2 = st.columns(2)
     with col1:
-        st.image("docs/images/short1.png")
+        st.image("docs/images/first.png")
     with col2:
-        st.image("docs/images/short2.png")
+        st.image("docs/images/second.png")
 
 # DataGrid
 with st.expander("DataGrid Content") as ep:
