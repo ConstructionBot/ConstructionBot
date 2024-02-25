@@ -33,20 +33,6 @@ st.markdown("""List of todos before uploading Excel sheet
 """)
 
 # Define correct API key
-correct_api_key = "Constro@786"
-
-# Login Form
-with st.sidebar:
-    st.subheader("Login")
-    api_key = st.text_input("Enter Password", type="password")
-
-    if st.button("Login"):
-        if api_key == correct_api_key:
-            st.success("Login successful!")
-            st.session_state.api_token = "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"
-        else:
-            st.error("Invalid Password. Please try again.")
-
 class AgentWrapper:
     id: str
     agent: Agent
@@ -117,17 +103,14 @@ if chat_history_key not in st.session_state:
 if "llm_ready" not in st.session_state:
     st.session_state.llm_ready = False
 
-if "agent_id" not in st.session_state:
-    st.session_state.agent_id = str(uuid.uuid4())
-
 # Description
 tab1, tab2 = st.tabs(["Workspace", "Screenshots"])
 with tab2:
     col1, col2 = st.columns(2)
     with col1:
-        st.image("docs/images/first.png")
+        st.image("docs/images/short1.png")
     with col2:
-        st.image("docs/images/second.png")
+        st.image("docs/images/short2.png")
 
 # DataGrid
 with st.expander("DataGrid Content") as ep:
@@ -152,7 +135,7 @@ with st.sidebar:
     if "client_secret" not in st.session_state:
         st.session_state.client_secret = ""
 
-    # Initialize model configuration panel
+    # Initialize model configration panel
     if option == "OpenAI":
         api_token = st.text_input("API Token", st.session_state.api_token, type="password", placeholder="Api token")
     elif option == "Baidu/AIStudio-Ernie-Bot":
@@ -287,7 +270,7 @@ with st.sidebar:
 
 # ChatBox layout
 
-for item in st.session_state[chat_history_key]:
+for item in st.session_state.chat_history:
     with st.chat_message(item["role"]):
         if "type" in item and item["type"] == "plot":
             tmp = st.image(item['content'])
@@ -298,14 +281,13 @@ for item in st.session_state[chat_history_key]:
 
 prompt = st.chat_input("Input the question here")
 if prompt is not None:
-    prompt = prompt.lower()  # Convert prompt to lowercase
     st.chat_message("user").markdown(prompt)
-    st.session_state[chat_history_key].append({"role": "user", "content": prompt})
+    st.session_state.chat_history.append({"role": "user", "content": prompt})
     with st.chat_message("assistant"):
         if not st.session_state.llm_ready:
             response = "Please upload the file and configure the LLM well first"
             st.markdown(response)
-            st.session_state[chat_history_key].append({"role": "assistant", "content": response})
+            st.session_state.chat_history.append({"role": "assistant", "content": response})
         else:
             tmp = st.markdown(f"Analyzing, hold on pls...")
 
@@ -313,12 +295,12 @@ if prompt is not None:
 
             if isinstance(response, SmartDataframe):
                 tmp.dataframe(response.dataframe)
-                st.session_state[chat_history_key].append(
+                st.session_state.chat_history.append(
                     {"role": "assistant", "content": response.dataframe, "type": "dataframe"})
             elif isinstance(response, Dict) and "type" in response and response["type"] == "plot":
                 tmp.image(f"{response['value']}")
-                st.session_state[chat_history_key].append(
+                st.session_state.chat_history.append(
                     {"role": "assistant", "content": response["value"], "type": "plot"})
             else:
                 tmp.markdown(response)
-                st.session_state[chat_history_key].append({"role": "assistant", "content": response})
+                st.session_state.chat_history.append({"role": "assistant", "content": response})
