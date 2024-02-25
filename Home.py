@@ -43,7 +43,7 @@ with st.sidebar:
     if st.button("Login"):
         if api_key == correct_api_key:
             st.success("Login successful!")
-            st.session_state.api_token = "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"
+            st.session_state.api_token = "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"
         else:
             st.error("Invalid Password. Please try again.")
 
